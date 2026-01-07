@@ -37,15 +37,25 @@ export const createEmployee = async (req, res) => {
 
 export const getAllEmployee = async (req, res) => {
   try {
-    const employees = await Employee.find({});
+    // pagination 
+    const page = parseInt(req.query.page) || 1 ;
+    const limit = parseInt(req.query.limit) || 5 ;
+    const skip = (page - 1) * limit;
+
+    const employees = await Employee.find({}).skip(skip).limit(limit);
 
     if (employees.length === 0) {
       return res.status(404).json({ message: "No employees found" });
     }
 
+    const totalDocument = await Employee.countDocuments();
+    const totalPages = await Math.ceil(totalDocument/limit);
+
     return res.status(200).json({
       message: "Employees fetched successfully",
-      employees
+      employees,
+      totalDocument,
+      totalPages,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
