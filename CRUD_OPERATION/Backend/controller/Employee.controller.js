@@ -42,13 +42,25 @@ export const getAllEmployee = async (req, res) => {
     const limit = parseInt(req.query.limit) || 5 ;
     const skip = (page - 1) * limit;
 
-    const employees = await Employee.find({}).skip(skip).limit(limit);
+    // sorting
+    const sortBy = req.query.sortBy || "city";
+    const sortOrder = req.query.sortOrder === "desc"? -1:1;
 
-    if (employees.length === 0) {
-      return res.status(404).json({ message: "No employees found" });
+    // filtering
+    const filter = {};
+    if (req.query.category) {
+      filter.category = req.query.category;
+    };
+    if (req.query.minAge) {
+      filter.age = {...filter.age, $gte:Number(req.query.minAge)}
     }
+    if (req.query.maxAge) {
+      filter.age = {...filter.age, $lte:Number(req.query.maxAge)};
+    };
 
-    const totalDocument = await Employee.countDocuments();
+    const employees = Employee.find(filter).sort({[sortBy]:sortOrder}).skip(skip).limit(limit);
+
+    const totalDocument = await Employee.countDocuments(filter);
     const totalPages = await Math.ceil(totalDocument/limit);
 
     return res.status(200).json({
@@ -56,6 +68,8 @@ export const getAllEmployee = async (req, res) => {
       employees,
       totalDocument,
       totalPages,
+      page,
+      limit,
     });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
