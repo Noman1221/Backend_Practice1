@@ -134,3 +134,14 @@ export const deleteEmp = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+// Want Next?
+
+// I can teach you:
+
+// Option A → Pagination + Sorting + Filtering using Aggregation Pipeline
+// Option B → Cursor-based Pagination (FB/Instagram style)
+// Option C → Reusable Middleware for Pagination
