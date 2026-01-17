@@ -2,10 +2,11 @@ import Employee from "../model/Employee.mpdel.js";
 
 export const createEmployee = async (req, res) => {
   try {
-    const { name, age, dob, city, country } = req.body;
+    const { name, age, bob, city, country } = req.body;
+console.log( name, age, bob, city, country );
 
 
-    if (!name || !age || !dob || !city || !country) {
+    if (!name || !age || !bob || !city || !country) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -18,7 +19,7 @@ export const createEmployee = async (req, res) => {
     const newEmployee = new Employee({
       name,
       age,
-      dob,
+      bob,
       city,
       country
     });
@@ -30,6 +31,7 @@ export const createEmployee = async (req, res) => {
       employee: newEmployee
     });
   } catch (error) {
+     console.error("Error creating employee:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -58,6 +60,8 @@ export const getAllEmployee = async (req, res) => {
       filter.age = {...filter.age, $lte:Number(req.query.maxAge)};
     };
 
+
+    
     const employees = Employee.find(filter).sort({[sortBy]:sortOrder}).skip(skip).limit(limit);
 
     const totalDocument = await Employee.countDocuments(filter);
@@ -75,6 +79,21 @@ export const getAllEmployee = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const searchApi = async (req,res)=>{
+ 
+  
+  let data = await Employee.find({
+"$or":[
+  {
+    "name":{$regex:req.params.key},
+  }
+]
+  });
+  console.log(data);
+  
+  res.json({message:"its work"})
+}
 
 
 export const getSpecificEmp = async (req, res) => {

@@ -10,7 +10,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 app.get("/test", (req,res)=>{
-    res.json({message:"testing"})
+   
+    
+ res.json({message:"testing"})
+    
 });
 app.use("/api", EmpRouter)
 main();
