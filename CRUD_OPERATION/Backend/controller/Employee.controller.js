@@ -80,20 +80,34 @@ export const getAllEmployee = async (req, res) => {
   }
 };
 
-export const searchApi = async (req,res)=>{
- 
-  
-  let data = await Employee.find({
-"$or":[
-  {
-    "name":{$regex:req.params.key},
+export const searchApi = async (req, res) => {
+  try {
+    const key = req.query.q || "";
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit)|| 10;
+    const skip = (page -1) * limit;
+        const filter = { "$or": [
+        { name: { $regex: key, $options: "i" } },
+        { city: { $regex: key, $options: "i" } },
+        { country: { $regex: key, $options: "i" } }
+      ]}
+
+    const data = await Employee.find(filter).skip(skip).limit(limit);
+
+    const total = await Employee.countDocuments(filter);
+
+    return res.json({
+      page,
+      total,
+      limit,
+      message: "Search successful",
+      results: data
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
   }
-]
-  });
-  console.log(data);
-  
-  res.json({message:"its work"})
-}
+};
 
 
 export const getSpecificEmp = async (req, res) => {
