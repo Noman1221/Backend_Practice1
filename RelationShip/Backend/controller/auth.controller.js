@@ -1,0 +1,1 @@
+import User from "../model/auth.model.js";
