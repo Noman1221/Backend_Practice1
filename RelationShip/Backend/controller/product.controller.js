@@ -22,3 +22,17 @@ export const CreateProduct = async (req, res)=>{
     res.status(500).json({message:error.message})
   }
 }
+
+export const getProducts = async (req,res)=>{
+  try {
+      const products = await Product.find({}).populate("userId", "name email");
+      console.log(products);
+      
+      if (!products) {
+        return res.status(404).json({message:"products not found"})
+      }
+      res.status(200).json({message:"get all users", products})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
+}
