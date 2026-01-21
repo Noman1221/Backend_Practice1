@@ -4,6 +4,8 @@ import User from "../model/auth.model.js";
 const isAuthenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -13,11 +15,11 @@ const isAuthenticate = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
-    if (!decoded || !decoded._id) {
+    if (!decoded || !decoded.userId) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    const user = await User.findById(decoded._id);
+    const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });

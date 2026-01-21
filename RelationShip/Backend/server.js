@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 dotenv.config();
 import dataBase from "./config/db.js";
 import authRoute from "./routes/auth.route.js";
+import productRout from "./routes/product.route.js";
 dataBase()
 const app =  express();
 
@@ -14,6 +15,7 @@ app.get("/test", (req,res)=>[
 ]);
 
 app.use("/auth", authRoute)
+app.use("/product", productRout)
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=>{
